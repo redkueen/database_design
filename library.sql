@@ -16,6 +16,6 @@ INSERT worker(NAME,PASSWORD,number)VALUE('徐巧红','qwe1234','32456');
 
 
 DELETE 
-UPDATE
+UPDATE 
 
 
