@@ -1,0 +1,38 @@
+-- 学生选课
+
+CREATE DATABASE school CHARSET = utf8;
+
+CREATE TABLE  student(
+
+id INT  PRIMARY KEY  AUTO_INCREMENT,
+
+`name`  VARCHAR(10) UNIQUE NOT NULL,
+
+sex CHAR(6) NOT NULL,
+
+age INT NOT NULL,
+
+student_number  INT  UNIQUE  NOT NULL
+
+);
+
+CREATE TABLE course(
+
+id INT PRIMARY KEY AUTO_INCREMENT,
+
+`name` VARCHAR (10) NOT NULL
+
+);
+
+CREATE TABLE student_course(
+
+id INT PRIMARY KEY AUTO_INCREMENT,
+
+s_id INT NOT NULL,
+
+c_id INT NOT NULL,
+
+score  DECIMAL(4,1),
+
+UNIQUE(s_id,c_id)
+);
