@@ -22,6 +22,7 @@ id INT PRIMARY KEY AUTO_INCREMENT,
 
 `name` VARCHAR (10) NOT NULL
 
+t_id  INT 
 );
 
 CREATE TABLE student_course(
@@ -35,4 +36,14 @@ c_id INT NOT NULL,
 score  DECIMAL(4,1),
 
 UNIQUE(s_id,c_id)
+);
+
+DROP TABLE course;
+
+CREATE TABLE teacher(
+
+id INT PRIMARY KEY AUTO_INCREMENT,
+
+`name` VARCHAR(10) NOT NULL
+
 );
