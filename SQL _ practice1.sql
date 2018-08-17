@@ -62,5 +62,32 @@ SELECT * FROM employee WHERE EXISTS(
 
 -- 2.7高于本部门平均工资的员工
 
+-- 方法1：
+SELECT * FROM employee JOIN (SELECT department_id ,AVG(salary) AS 平均工资 FROM employee GROUP BY department_id)t
+    
+                            ON employee.department_id  =  t.department_id
+          WHERE salary > `平均工资` ;
 
+-- 方法2:
+SELECT * FROM employee WHERE EXISTS(
+
+        SELECT department_id , AVG(salary) AS 平均工资 FROM employee AS t
+           
+              WHERE employee.department_id = t.department_id
+              
+                    GROUP BY  t.department_id
+                    
+                          HAVING  employee.salary > `平均工资`
+
+);
+SELECT * FROM employee WHERE EXISTS(
+
+         SELECT department_id , AVG(salary) FROM employee AS 平工
+         
+                WHERE employee.department_id = 平工.department_id
+                
+                      GROUP BY 平工.department_id
+                      
+                              HAVING employee.salary > AVG(salary)
+);
 
