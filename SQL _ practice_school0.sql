@@ -107,8 +107,12 @@ SELECT s_id FROM student_course WHERE c_id IN (SELECT c_id FROM student_course W
 
 -- 方法1:
 
-SELECT t1.s_id FROM (SELECT sc.s_id,COUNT(sc.id)AS number FROM student_course sc GROUP BY sc.s_id )t1 
+  SELECT t1.s_id FROM (SELECT sc.s_id,COUNT(sc.id)AS number FROM student_course sc GROUP BY sc.s_id )t1 
             JOIN (SELECT sc.s_id,COUNT(sc.id)AS number FROM student_course sc WHERE sc.score < 60 GROUP BY sc.s_id)t2 ON t1.s_id = t2.s_id
-     WHERE t1.number = t2.number ;
+        WHERE t1.number = t2.number ;
 
 -- 方法2:
+
+  SELECT s.id FROM student s 
+        WHERE (SELECT COUNT( sc.id) AS number FROM student_course sc WHERE sc.s_id = s.id)
+                = (SELECT COUNT( sc.id) AS number FROM student_course sc WHERE sc.s_id = s.id AND sc.score <60);
