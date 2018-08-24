@@ -28,7 +28,7 @@ SELECT `name`, course_number FROM
 
 -- 2.3 与1号学生至少有一门课相同的学生id
 
-SELECT s_id FROM student_course WHERE c_id IN (SELECT c_id FROM student_course WHERE student_course.s_id = 1);
+SELECT DISTINCT s_id FROM student_course WHERE c_id IN (SELECT c_id FROM student_course WHERE student_course.s_id = 1);
 -- SELECT * FROM student_course sc WHERE sc.s_id IN ( SELECT sc1.s_keid FROM student_course sc1 WHERE sc1.s_id=1 );
 
 -- 2.4 统计每门课程的平均成绩,按平均成绩升序排序,平均成绩相同时按课号降序排序
