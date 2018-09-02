@@ -1,0 +1,60 @@
+
+transaction log : redo log
+
+
+Innodb redo log archiving 功能介绍
+https://dzone.com/articles/innodb-redo-log-archiving
+
+
+Percona Server for MySQL 5.6.11-rc60.3   仅仅只有这个版本提供了 innodb log archiving 能力 （而且该能力代码是alpha版本）
+https://www.percona.com/doc/percona-server/5.6/management/log_archiving.html
+
+
+
+centos 7 x64下 
+1、  安装 Percona Server for MySQL 5.6.11-rc60.3 
+cd /root/x/
+wget https://www.percona.com/downloads/Percona-Server-5.6/Percona-Server-5.6.11-rc60.3/RPM/rhel6/x86_64/Percona-Server-shared-56-5.6.11-rc60.3.376.rhel6.x86_64.rpm https://www.percona.com/downloads/Percona-Server-5.6/Percona-Server-5.6.11-rc60.3/RPM/rhel6/x86_64/Percona-Server-client-56-5.6.11-rc60.3.376.rhel6.x86_64.rpm https://www.percona.com/downloads/Percona-Server-5.6/Percona-Server-5.6.11-rc60.3/RPM/rhel6/x86_64/Percona-Server-devel-56-5.6.11-rc60.3.376.rhel6.x86_64.rpm https://www.percona.com/downloads/Percona-Server-5.6/Percona-Server-5.6.11-rc60.3/RPM/rhel6/x86_64/Percona-Server-server-56-5.6.11-rc60.3.376.rhel6.x86_64.rpm
+rpm -ivh *.rpm
+
+注意:  启动后 select versio(); 结果为:  5.6.11-56
+
+2、 启动
+service mysql start
+
+3、 开启transaction log 写到磁盘
+mysql  -- 连接客户端 以下为mysql命令行1 {
+use test;
+CREATE TABLE usr  (id int AUTO_INCREMENT PRIMARY KEY, name varchar(30) NOT NULL);
+
+set global innodb_log_archive = 1;  #开启innodb_log_archive
+-- set @innodb_log_archive = 1;  -- 这句话 并没有 开启   innodb_log_archive
+select @innodb_log_archive, @innodb_log_arch_expire_sec, @innodb_log_arch_dir,@Com_purge_archived,@Com_purge_archived_before_date;
+begin; insert into usr(id,name) values (666666,'0');  commit;
+begin; update usr set name = concat(name, 'ThisIs1111')  WHERE id = 666666;  
+		-- 以下为mysql命令行2{
+		begin; update usr set name = concat(name, 'IAm2222')  WHERE id = 666666;  commit;
+		-- mysql命令行2}
+commit;
+exit;  -- mysql命令行1}
+
+4、 事实上去做: transaction log写到盘
+service mysql stop 
+/var/lib/mysql/ib_log_archive_00000000000001625600
+
+
+总结下 关键点在于:
+版本: Percona-Server-5.6.11-rc60.3
+set global innodb_log_archive = 1; 开启redo log 写到磁盘
+service mysql stop :  事实上去做: redo log写到盘
+
+遗留问题:
+如何让 每个 redo log 文件 更小.  此问题 不解决  并不妨碍走下去,只是每个文件都很大,分析加载慢.
+
+
+引用:
+https://www.percona.com/doc/percona-server/5.6/management/log_archiving.html
+Percona-Server 5.6.11-60.3 (5.6.11-rc60.3)  有写 transaction log到磁盘到功能
+
+https://dzone.com/articles/innodb-redo-log-archiving
+	提到 将 redo log写入磁盘的想法

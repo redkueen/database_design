@@ -1,0 +1,42 @@
+1 安装
+wget http://ftp.hosteurope.de/mirror/archive.mariadb.org//mariadb-10.0.9/kvm-bintar-centos5-amd64/mariadb-10.0.9-linux-x86_64.tar.gz
+
+os_user=mariadb_os_user
+data_root=/var/lib/$os_user/data/
+ROOT=/root/mariadb-10.0.9-linux-x86_64;
+#ROOT=/root/mariadb-10.2.5-linux-x86_64;#版本mariadb-10.2.5: set global innodb_log_archive = 1;  报错: ERROR 1193 (HY000): Unknown system variable 'innodb_log_archive'.  所以估计没有将redo log写入磁盘的功能.
+
+useradd $os_user
+mkdir -p $data_root; chown -R $os_user.$os_user $data_root
+
+rm -fr  $data_root/*
+
+
+cd $ROOT;  $ROOT/scripts/mysql_install_db  --datadir=$data_root
+chown -R $os_user.$os_user $data_root
+
+2 启动
+$ROOT/bin/mysqld --basedir=$ROOT/ --datadir=$data_root --plugin-dir=$ROOT/lib/plugin --user=$os_user --innodb-log-buffer-size=262144 --log-error=$data_root/localhost.localdomain.err --pid-file=$data_root/localhost.localdomain.pid --port 3307 --socket=$data_root/s.sock
+
+
+3、 开启transaction log 写到磁盘
+mysql -S $data_root/s.sock
+use test;
+CREATE TABLE usr  (id int AUTO_INCREMENT PRIMARY KEY, name varchar(30) NOT NULL);
+
+set global innodb_log_archive = 1;  #开启innodb_log_archive
+-- set @innodb_log_archive = 1;  -- 这句话 并没有 开启   innodb_log_archive
+select @innodb_log_archive, @innodb_log_arch_expire_sec, @innodb_log_arch_dir,@Com_purge_archived,@Com_purge_archived_before_date;
+begin; insert into usr(id,name) values (666666,'0');  commit;
+
+4、 事实上去做: transaction log写到盘
+ps auxf | grep mysqld
+kill掉mysqld进程
+$data_root/ib_log_archive_00000000000001625600
+
+
+
+引用:
+https://mariadb.com/kb/en/library/xtradbinnodb-server-system-variables/#innodb_log_archive
+	 MariaDB 10.0.9 到  MariaDB 10.2.5 应该都有写 transaction log到磁盘到功能, 但实际上 10.0.9 有，但是 10.2.5 没有. 中间版本没有验证
+	 
