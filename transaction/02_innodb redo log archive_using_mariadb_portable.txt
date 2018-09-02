@@ -26,8 +26,13 @@ CREATE TABLE usr  (id int AUTO_INCREMENT PRIMARY KEY, name varchar(30) NOT NULL)
 
 set global innodb_log_archive = 1;  #开启innodb_log_archive
 -- set @innodb_log_archive = 1;  -- 这句话 并没有 开启   innodb_log_archive
-select @innodb_log_archive, @innodb_log_arch_expire_sec, @innodb_log_arch_dir,@Com_purge_archived,@Com_purge_archived_before_date;
-begin; insert into usr(id,name) values (666666,'0');  commit;
+select   @@innodb_log_archive, @@innodb_log_arch_expire_sec, @@innodb_log_arch_dir ;
+
+
+begin; 
+insert into usr(id,name) values (666666,'0');  
+insert into usr(id,name) values (777777,'111');  
+commit;
 
 4、 事实上去做: transaction log写到盘
 ps auxf | grep mysqld
