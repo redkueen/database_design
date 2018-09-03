@@ -3,7 +3,7 @@ wget http://ftp.hosteurope.de/mirror/archive.mariadb.org//mariadb-10.0.9/kvm-bin
 
 os_user=mariadb_os_user
 data_root=/var/lib/$os_user/data/
-ROOT=/root/mariadb-10.0.9-linux-x86_64;
+ROOT=/root/mariadb-10.0.9-linux-x86_64
 #ROOT=/root/mariadb-10.2.5-linux-x86_64;#版本mariadb-10.2.5: set global innodb_log_archive = 1;  报错: ERROR 1193 (HY000): Unknown system variable 'innodb_log_archive'.  所以估计没有将redo log写入磁盘的功能.
 
 useradd $os_user
@@ -19,8 +19,13 @@ chown -R $os_user.$os_user $data_root
 $ROOT/bin/mysqld --basedir=$ROOT/ --datadir=$data_root --plugin-dir=$ROOT/lib/plugin --user=$os_user --innodb-log-buffer-size=262144 --log-error=$data_root/localhost.localdomain.err --pid-file=$data_root/localhost.localdomain.pid --port 3307 --socket=$data_root/s.sock
 
 
+/root/mariadb-10.0.9-linux-x86_64/bin/mysqld --basedir=/root/mariadb-10.0.9-linux-x86_64/ --datadir=/var/lib/mariadb_os_user/data/ --plugin-dir=/root/mariadb-10.0.9-linux-x86_64/lib/plugin --user=mariadb_os_user --innodb-log-buffer-size=262144 --log-error=/var/lib/mariadb_os_user/data//localhost.localdomain.err --pid-file=/var/lib/mariadb_os_user/data/localhost.localdomain.pid --port 3307 --socket=/var/lib/mariadb_os_user/data//s.sock
+
+
 3、 开启transaction log 写到磁盘
-mysql -S $data_root/s.sock
+mysql -S $data_root/s.sock     
+# /root/mariadb-10.0.9-linux-x86_64/bin/mysql -S /var/lib/mariadb_os_user/data/s.sock 
+
 use test;
 CREATE TABLE usr  (id int AUTO_INCREMENT PRIMARY KEY, name varchar(30) NOT NULL);
 
