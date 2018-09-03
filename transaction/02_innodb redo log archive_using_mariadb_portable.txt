@@ -19,6 +19,7 @@ chown -R $os_user.$os_user $data_root
 $ROOT/bin/mysqld --basedir=$ROOT/ --datadir=$data_root --plugin-dir=$ROOT/lib/plugin --user=$os_user --innodb-log-buffer-size=262144 --log-error=$data_root/localhost.localdomain.err --pid-file=$data_root/localhost.localdomain.pid --port 3307 --socket=$data_root/s.sock
 
 /root/mariadb-10.0.9-linux-x86_64/bin/mysqld --basedir=/root/mariadb-10.0.9-linux-x86_64/ --datadir=/var/lib/mariadb_os_user/data/ --plugin-dir=/root/mariadb-10.0.9-linux-x86_64/lib/plugin --user=mariadb_os_user --innodb-log-buffer-size=262144 --log-error=/var/lib/mariadb_os_user/data//localhost.localdomain.err --pid-file=/var/lib/mariadb_os_user/data//localhost.localdomain.pid --port 3307 --socket=/var/lib/mariadb_os_user/data//s.sock --innodb-log-archive=1
+#--innodb-log-archive=1 启动时 开启innodb_log_archive(方法1)
 
 
 3、 开启transaction log 写到磁盘
@@ -28,7 +29,7 @@ mysql -S $data_root/s.sock
 use test;
 CREATE TABLE usr  (id int AUTO_INCREMENT PRIMARY KEY, name varchar(30) NOT NULL);
 
-set global innodb_log_archive = 1;  #开启innodb_log_archive
+-- set global innodb_log_archive = 1;  #启动后  开启innodb_log_archive(方法2)
 -- set @innodb_log_archive = 1;  -- 这句话 并没有 开启   innodb_log_archive
 select   @@innodb_log_archive, @@innodb_log_arch_expire_sec, @@innodb_log_arch_dir ;
 
